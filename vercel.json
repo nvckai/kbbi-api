@@ -1,6 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "framework": "nodejs",
   "env": {
     "ENVIRONMENT": "production"
   },
