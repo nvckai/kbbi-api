@@ -3,10 +3,5 @@
     "ENVIRONMENT": "production"
   },
   "outputDirectory": "",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
+  
 }
