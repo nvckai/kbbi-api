@@ -26,11 +26,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const entry = await getWordEntry(decodedWord);
 
   if (entry) {
-    const hasNonStandard = entry.data.entri.some(e => e.bentuk_tidak_baku.length > 0);
+    const hasNonStandard = entry.entri.some(e => e.bentuk_tidak_baku.length > 0);
     return res.status(200).json({
       is_standard: true,
       word: decodedWord,
-      non_standard_forms: entry.data.entri[0]?.bentuk_tidak_baku || [],
+      non_standard_forms: entry.entri[0]?.bentuk_tidak_baku || [],
     });
   }
 
