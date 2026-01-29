@@ -66,7 +66,7 @@ export function levenshteinDistance(str1: string, str2: string): number {
 }
 
 // Response handler
-export function createResponse(data: any, status: number = 200) {
+export function createResponse(data: unknown, status: number = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: corsHeaders,
@@ -74,6 +74,6 @@ export function createResponse(data: any, status: number = 200) {
 }
 
 // Error response
-export function createErrorResponse(error: string, status: number = 400) {
+export function createErrorResponse(error: string, status: number = 400): Response {
   return createResponse({ error }, status);
 }

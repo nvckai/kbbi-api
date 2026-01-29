@@ -8,19 +8,17 @@ import { KBBIEntry } from './utils';
 import fs from 'fs';
 import path from 'path';
 
-let cachedData: Map<string, KBBIEntry> | null = null;
-let cachedWordIndex: string[] | null = null;
-let cachedNonStandardIndex: Record<string, string> | null = null;
+let cachedData: Map<string, KBBIEntry> = new Map();
+let cachedWordIndex: string[] = [];
+let cachedNonStandardIndex: Record<string, string> = {};
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 
 // Load data from JSON files
 async function loadData(): Promise<Map<string, KBBIEntry>> {
-  if (cachedData) {
+  if (cachedData.size > 0) {
     return cachedData;
   }
-
-  cachedData = new Map();
 
   try {
     const entriesPath = path.join(DATA_DIR, 'entries.json');
@@ -53,7 +51,7 @@ export async function getWordEntry(word: string): Promise<KBBIEntry | null> {
 }
 
 export async function getWordIndex(): Promise<string[]> {
-  if (cachedWordIndex) {
+  if (cachedWordIndex.length > 0) {
     return cachedWordIndex;
   }
 
@@ -65,7 +63,8 @@ export async function getWordIndex(): Promise<string[]> {
       return [];
     }
 
-    cachedWordIndex = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+    const parsed = JSON.parse(fs.readFileSync(indexPath, 'utf-8')) as string[];
+    cachedWordIndex = Array.isArray(parsed) ? parsed : [];
     return cachedWordIndex;
   } catch (error) {
     console.error('Error loading word index:', error);
@@ -74,7 +73,7 @@ export async function getWordIndex(): Promise<string[]> {
 }
 
 export async function getNonStandardIndex(): Promise<Record<string, string>> {
-  if (cachedNonStandardIndex) {
+  if (Object.keys(cachedNonStandardIndex).length > 0) {
     return cachedNonStandardIndex;
   }
 
@@ -86,7 +85,8 @@ export async function getNonStandardIndex(): Promise<Record<string, string>> {
       return {};
     }
 
-    cachedNonStandardIndex = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+    const parsed = JSON.parse(fs.readFileSync(indexPath, 'utf-8')) as Record<string, string>;
+    cachedNonStandardIndex = parsed && typeof parsed === 'object' ? parsed : {};
     return cachedNonStandardIndex;
   } catch (error) {
     console.error('Error loading non-standard index:', error);
@@ -95,7 +95,7 @@ export async function getNonStandardIndex(): Promise<Record<string, string>> {
 }
 
 export function clearCache() {
-  cachedData = null;
-  cachedWordIndex = null;
-  cachedNonStandardIndex = null;
+  cachedData = new Map();
+  cachedWordIndex = [];
+  cachedNonStandardIndex = {};
 }
