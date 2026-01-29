@@ -1,12 +1,9 @@
 {
   "buildCommand": "npm run build",
   "framework": "nodejs",
-  "env": [
-    {
-      "key": "ENVIRONMENT",
-      "value": "production"
-    }
-  ],
+  "env": {
+    "ENVIRONMENT": "production"
+  },
   "rewrites": [
     {
       "source": "/(.*)",
