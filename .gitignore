@@ -3,12 +3,7 @@ dist/
 .wrangler/
 .vercel/
 kv-data/
-data/
-*.log
-.env
-.env.local
-.env.*.local
-.env.production
+
 .DS_Store
 .claude/
 build/
