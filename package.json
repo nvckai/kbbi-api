@@ -1,21 +1,28 @@
 {
   "name": "open-api-kbbi",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "2.0.0",
+  "main": "api/index.ts",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "prepare-data": "node scripts/prepare-data.js",
-    "build": "echo 'No build step required for Workers'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod",
+    "prepare-data": "node scripts/prepare-data-vercel.js",
+    "build": "echo 'Vercel handles builds automatically'",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"No linter configured yet\""
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["kbbi", "indonesian", "dictionary", "api", "vercel"],
+  "author": "baguskto",
   "license": "ISC",
-  "description": "",
+  "description": "Indonesian Dictionary API powered by KBBI dataset - Vercel Edition",
+  "dependencies": {
+    "@vercel/node": "^3.0.0"
+  },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251115.0",
+    "@types/node": "^20.10.5",
     "typescript": "^5.9.3",
-    "wrangler": "^4.47.0"
+    "vercel": "^33.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

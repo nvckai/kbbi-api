@@ -1,0 +1,37 @@
+/**
+ * GET /api/word/:word
+ * Get complete word details from KBBI
+ */
+
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { getWordEntry } from '../../lib/data-loader';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  const { word } = req.query;
+
+  if (!word || typeof word !== 'string') {
+    return res.status(400).json({ error: 'Word parameter is required' });
+  }
+
+  const decodedWord = decodeURIComponent(word).toLowerCase();
+  const entry = await getWordEntry(decodedWord);
+
+  if (!entry) {
+    return res.status(404).json({
+      error: 'Word not found',
+      word: decodedWord,
+    });
+  }
+
+  return res.status(200).json(entry);
+}

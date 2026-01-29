@@ -1,0 +1,19 @@
+{
+  "buildCommand": "npm run build",
+  "framework": "nodejs",
+  "serverless": {
+    "regions": ["sfo", "iad"]
+  },
+  "env": [
+    {
+      "key": "ENVIRONMENT",
+      "value": "production"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}

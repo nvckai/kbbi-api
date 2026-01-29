@@ -1,6 +1,6 @@
 # KBBI API - Indonesian Dictionary API
 
-Backend API for the KBBI Assistant mobile app, deployed on Cloudflare Workers.
+Backend API for the KBBI Assistant mobile app, deployed on **Vercel Serverless Functions**.
 
 ## Features
 
@@ -9,8 +9,9 @@ Backend API for the KBBI Assistant mobile app, deployed on Cloudflare Workers.
 - **Non-Standard Check**: Check if a word is in standard form and get suggestions
 - **Similar Words**: Get typo suggestions using Levenshtein distance
 - **Search**: Search words by prefix or substring
-- **High Performance**: Deployed on Cloudflare's global edge network with KV storage
+- **Fast Deployment**: Deployed on Vercel's global serverless network
 - **CORS Enabled**: Ready for mobile and web apps
+- **TypeScript**: Fully typed for better development experience
 
 ## API Endpoints
 
@@ -21,7 +22,7 @@ GET /api/lookup/:word
 
 **Example:**
 ```bash
-curl https://your-worker.workers.dev/api/lookup/rumah
+curl https://your-vercel-app.vercel.app/api/lookup/rumah
 ```
 
 **Response:**
@@ -39,7 +40,7 @@ GET /api/word/:word
 
 **Example:**
 ```bash
-curl https://your-worker.workers.dev/api/word/rumah
+curl https://your-vercel-app.vercel.app/api/word/rumah
 ```
 
 **Response:**
@@ -68,7 +69,7 @@ GET /api/check/:word
 
 **Example:**
 ```bash
-curl https://your-worker.workers.dev/api/check/rumah
+curl https://your-vercel-app.vercel.app/api/check/rumah
 ```
 
 **Response:**
@@ -87,7 +88,7 @@ GET /api/similar/:word?limit=5
 
 **Example:**
 ```bash
-curl https://your-worker.workers.dev/api/similar/rumh?limit=5
+curl https://your-vercel-app.vercel.app/api/similar/rumh?limit=5
 ```
 
 **Response:**
@@ -108,7 +109,7 @@ GET /api/search?q=query&limit=10
 
 **Example:**
 ```bash
-curl https://your-worker.workers.dev/api/search?q=rum&limit=10
+curl https://your-vercel-app.vercel.app/api/search?q=rum&limit=10
 ```
 
 **Response:**
@@ -129,7 +130,8 @@ GET /api/stats
 ```json
 {
   "total_words": 112651,
-  "api_version": "1.0.0",
+  "api_version": "2.0.0",
+  "platform": "Vercel Serverless Functions",
   "endpoints": [...]
 }
 ```
@@ -138,93 +140,130 @@ GET /api/stats
 
 ### Prerequisites
 
-1. **Cloudflare Account**: Sign up at [cloudflare.com](https://cloudflare.com)
-2. **Wrangler CLI**: Already installed in this project
+1. **Vercel Account**: Sign up at [vercel.com](https://vercel.com)
+2. **Vercel CLI**: `npm install -g vercel`
 3. **Node.js**: Version 18 or higher
+4. **GitHub Account** (recommended): For easier deployment
 
 ### Step 1: Prepare the Data
 
-Process the KBBI JSON files and create KV-ready data:
+Process the KBBI JSON files and create optimized data files:
 
 ```bash
 npm run prepare-data
 ```
 
-This will create:
-- `kv-data/` directory with processed data
-- Word index files
-- Non-standard word mappings
-- Bulk upload JSON files
+This will create JSON files in `data/` directory:
+- `entries.json` - All dictionary entries
+- `word-index.json` - Complete word list
+- `non-standard-index.json` - Non-standard word mappings
 
-### Step 2: Create KV Namespace
-
-```bash
-npx wrangler kv:namespace create KBBI_DATA
-```
-
-You'll get output like:
-```
-{ binding = "KBBI_DATA", id = "xxxxxxxxxxxxx" }
-```
-
-For preview (development):
-```bash
-npx wrangler kv:namespace create KBBI_DATA --preview
-```
-
-### Step 3: Update wrangler.toml
-
-Edit `wrangler.toml` and replace the KV namespace IDs:
-
-```toml
-[[kv_namespaces]]
-binding = "KBBI_DATA"
-id = "your_production_namespace_id"
-preview_id = "your_preview_namespace_id"
-```
-
-### Step 4: Upload Data to KV
-
-Upload the processed data to Cloudflare KV:
+### Step 2: Install Dependencies
 
 ```bash
-cd kv-data
-
-# Set your namespace ID
-export KV_NAMESPACE_ID="your_namespace_id"
-
-# Upload using the generated script
-./upload-to-kv.sh
+npm install
 ```
 
-Or upload manually using the bulk upload files:
-
-```bash
-npx wrangler kv:bulk put kv-data/bulk_upload_1.json --namespace-id=your_namespace_id
-npx wrangler kv:bulk put kv-data/bulk_upload_2.json --namespace-id=your_namespace_id
-# ... continue for all bulk files
-```
-
-### Step 5: Test Locally
+### Step 3: Test Locally
 
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:8787` to test the API locally.
+The API will be available at `http://localhost:3000`
 
-### Step 6: Deploy to Cloudflare
-
+Test the endpoints:
 ```bash
-npm run deploy
+curl http://localhost:3000/api/stats
 ```
 
-Your API will be deployed to `https://kbbi-api.your-subdomain.workers.dev`
+### Step 4: Deploy to Vercel
+
+#### Option A: Using Vercel CLI (Fastest)
+
+```bash
+vercel deploy --prod
+```
+
+You'll be prompted to:
+1. Confirm project settings
+2. Link to a Vercel project (or create new)
+3. Set project name
+
+Your API will be deployed to: `https://kbbi-api.vercel.app` (or your custom domain)
+
+#### Option B: Using GitHub (Recommended)
+
+1. Push your code to GitHub:
+```bash
+git add .
+git commit -m "Convert to Vercel deployment"
+git push origin main
+```
+
+2. Go to [vercel.com/new](https://vercel.com/new)
+3. Import your GitHub repository
+4. Vercel will auto-detect the configuration and deploy
+5. Set up automatic deployments on push
+
+#### Option C: Using Vercel Dashboard
+
+1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
+2. Click "New Project"
+3. Import your GitHub/GitLab/Bitbucket repository
+4. Configure and deploy
+
+### Step 5: Set Environment Variables (Optional)
+
+If needed, set environment variables in Vercel:
+
+```bash
+vercel env add ENVIRONMENT production
+```
+
+Or via Vercel Dashboard:
+1. Settings → Environment Variables
+2. Add `ENVIRONMENT = production`
+
+## Project Structure
+
+```
+kbbi-api/
+├── api/                    # Vercel API routes
+│   ├── index.ts           # Root endpoint
+│   ├── lookup/[word].ts   # Word lookup endpoint
+│   ├── word/[word].ts     # Word details endpoint
+│   ├── check/[word].ts    # Standard form check
+│   ├── similar/[word].ts  # Similar words endpoint
+│   ├── search.ts          # Search endpoint
+│   └── stats.ts           # API stats endpoint
+├── lib/                    # Shared utilities
+│   ├── utils.ts           # Common utilities
+│   └── data-loader.ts     # Data loading logic
+├── data/                   # Generated data files (created by prepare-data)
+│   ├── entries.json
+│   ├── word-index.json
+│   └── non-standard-index.json
+├── scripts/
+│   └── prepare-data-vercel.js  # Data preparation script
+├── package.json           # Dependencies
+├── tsconfig.json          # TypeScript configuration
+├── vercel.json            # Vercel configuration
+└── README.md             # This file
+```
+
+## Performance Optimization
+
+- **Serverless**: Auto-scales based on traffic
+- **Edge Caching**: Responses cached with appropriate `Cache-Control` headers
+- **Fast Data Loading**: In-memory caching of dictionary data
+- **CORS**: Pre-configured for cross-origin requests
+- **TypeScript**: Type-safe code for better reliability
 
 ## Usage in React Native App
 
 ```javascript
-const KBBI_API_URL = 'https://your-worker.workers.dev';
+const KBBI_API_URL = 'https://your-vercel-app.vercel.app';
 
 // Check if word exists
 async function checkWord(word) {
@@ -251,32 +290,44 @@ async function searchWords(query) {
 }
 ```
 
-## Performance Optimization
+## Monitoring and Logging
 
-- **KV Storage**: All words are cached in Cloudflare KV (low-latency key-value store)
-- **Edge Network**: Deployed globally for minimal latency
-- **HTTP Caching**: Response caching with appropriate `Cache-Control` headers
-- **CORS**: Pre-configured for cross-origin requests
-
-## Monitoring
-
-View logs and analytics:
+View deployment logs:
 
 ```bash
-npx wrangler tail
+vercel logs <project-name>
 ```
 
-Or visit the Cloudflare Dashboard for detailed analytics.
+Or via Vercel Dashboard:
+1. Go to your project
+2. Click "Deployments" tab
+3. Select a deployment to view logs
+
+## Scaling Considerations
+
+**Free Plan Limits:**
+- 100,000 invocations/month
+- 50 GB-hours/month
+- 100 concurrent connections
+
+**For larger scale, upgrade to:**
+- **Pro Plan**: $20/month, unlimited invocations
+- **Enterprise**: Custom limits
+
+## Database Options (For Future Enhancement)
+
+If you need to scale beyond file-based storage:
+
+1. **Vercel KV** (Redis): Perfect for caching
+2. **PostgreSQL**: For complex queries
+3. **MongoDB**: For document storage
+4. **Supabase**: PostgreSQL with real-time capabilities
 
 ## Cost Estimate
 
-Cloudflare Workers Free Tier includes:
-- 100,000 requests/day
-- Unlimited KV reads
-- 1,000 KV writes/day
-- 1 GB KV storage
-
-This should be sufficient for development and moderate production use.
+- **Free Plan**: Sufficient for development and low traffic
+- **Pro Plan** ($20/month): Good for production with moderate traffic
+- **Data storage**: Minimal (JSON files < 100MB)
 
 ## Data Source
 
@@ -288,32 +339,51 @@ KBBI dataset from: [kbbi-dataset-kbbi-v-main](https://github.com/damzaky/kumpula
 
 ## Troubleshooting
 
-### KV Upload Fails
-
-If bulk upload fails due to size limits, split the data into smaller chunks or use individual key uploads.
-
-### Workers Deployment Fails
-
-- Ensure you're logged in: `npx wrangler login`
-- Check your Cloudflare account has Workers enabled
-- Verify wrangler.toml configuration
+### Build Fails
+- Ensure Node.js 18+ is installed: `node --version`
+- Clear node_modules: `rm -rf node_modules && npm install`
+- Check TypeScript errors: `npx tsc --noEmit`
 
 ### Data Not Found
+- Run prepare-data script: `npm run prepare-data`
+- Verify data files exist in `data/` directory
+- Check file permissions
 
-- Verify KV namespace is correctly bound in wrangler.toml
-- Check data was uploaded successfully: `npx wrangler kv:key list --namespace-id=your_id`
+### Deployment Issues
+- Ensure vercel.json is valid JSON
+- Check all dependencies in package.json
+- View logs: `vercel logs <project-name>`
+
+## API Comparison: Cloudflare vs Vercel
+
+| Feature | Cloudflare Workers | Vercel Functions |
+|---------|-------------------|------------------|
+| Startup Time | < 1ms | ~ 100ms |
+| Global Network | Yes (Edge) | Yes (Data Centers) |
+| Free Tier | Generous | 100k invocations |
+| Cost | Pay-per-request | Monthly plan |
+| Cold Start | Minimal | Higher |
+| Best For | Low latency, global | Rapid development, scaling |
+
+Choose **Vercel** if you prefer:
+- Simpler setup and deployment
+- GitHub integration
+- Pay-as-you-go or monthly pricing
+- Node.js ecosystem
 
 ## Next Steps
 
 After deployment:
 1. Test all endpoints with real data
 2. Integrate with React Native app
-3. Add rate limiting if needed
-4. Set up custom domain (optional)
-5. Monitor usage and performance
+3. Monitor usage in Vercel Dashboard
+4. Consider adding rate limiting middleware
+5. Set up custom domain (optional)
 
 ## Support
 
-For issues or questions, please refer to:
-- [Cloudflare Workers Docs](https://developers.cloudflare.com/workers/)
-- [Wrangler CLI Docs](https://developers.cloudflare.com/workers/wrangler/)
+For issues or questions:
+- [Vercel Docs](https://vercel.com/docs)
+- [Vercel Support](https://vercel.com/support)
+- [Node.js Docs](https://nodejs.org/docs/)
+
