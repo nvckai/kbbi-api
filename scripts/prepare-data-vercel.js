@@ -31,20 +31,29 @@ async function prepareData() {
       console.log(`Processing ${file}...`);
 
       const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      const entries = Array.isArray(content) ? content : content.data || [];
+      
+      // Content is { wordKey: { data: { entri: [...] } } }
+      for (const [wordKey, wordObj] of Object.entries(content)) {
+        if (!wordObj || !wordObj.data || !wordObj.data.entri) continue;
+        
+        const entri = wordObj.data.entri;
+        if (!Array.isArray(entri)) continue;
 
-      for (const entry of entries) {
-        if (entry.entri && Array.isArray(entry.entri)) {
-          for (const wordEntry of entry.entri) {
-            const word = wordEntry.nama.toLowerCase();
-            allEntries[word] = entry;
-            wordIndex.push(word);
+        for (const wordEntry of entri) {
+          if (!wordEntry || !wordEntry.nama) continue;
+          
+          // Extract clean word name (remove periods used for syllable separation)
+          const cleanWord = wordEntry.nama.toLowerCase().replace(/\./g, '');
+          
+          // Store by both clean word and original key for flexibility
+          allEntries[cleanWord] = wordObj.data; // Store the data object
+          wordIndex.push(cleanWord);
 
-            // Build non-standard index
-            if (wordEntry.bentuk_tidak_baku) {
-              for (const nonStandard of wordEntry.bentuk_tidak_baku) {
-                nonStandardIndex[nonStandard.toLowerCase()] = word;
-              }
+          // Build non-standard index
+          if (wordEntry.bentuk_tidak_baku && Array.isArray(wordEntry.bentuk_tidak_baku)) {
+            for (const nonStandard of wordEntry.bentuk_tidak_baku) {
+              const cleanNonStandard = nonStandard.toLowerCase().replace(/\./g, '');
+              nonStandardIndex[cleanNonStandard] = cleanWord;
             }
           }
         }

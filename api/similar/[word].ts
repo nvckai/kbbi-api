@@ -3,7 +3,7 @@
  * Get similar words (typo suggestions) using Levenshtein distance
  */
 
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '../../lib/vercel-types';
 import { levenshteinDistance } from '../../lib/utils';
 import { getWordIndex } from '../../lib/data-loader';
 

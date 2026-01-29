@@ -3,7 +3,7 @@
  * Check if a word is in standard KBBI form
  */
 
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '../../lib/vercel-types';
 import { getWordEntry, getNonStandardIndex } from '../../lib/data-loader';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

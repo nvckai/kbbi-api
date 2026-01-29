@@ -3,7 +3,7 @@
  * Root API endpoint with API information
  */
 
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '../lib/vercel-types';
 import { corsHeaders, createResponse } from '../lib/utils';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

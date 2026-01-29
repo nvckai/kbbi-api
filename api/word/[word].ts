@@ -3,7 +3,7 @@
  * Get complete word details from KBBI
  */
 
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '../../lib/vercel-types';
 import { getWordEntry } from '../../lib/data-loader';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
