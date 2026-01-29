@@ -2,6 +2,7 @@
   "env": {
     "ENVIRONMENT": "production"
   },
+  "outputDirectory": "",
   "rewrites": [
     {
       "source": "/(.*)",
